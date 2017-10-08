@@ -10,7 +10,7 @@ import UIKit
 import AVFoundation
 import Vision
 
-final class ViewController: UIViewController, UIGestureRecognizerDelegate {
+final class ViewController: UIViewController, UIGestureRecognizerDelegate, AVCapturePhotoCaptureDelegate {
     var session: AVCaptureSession?
     let shapeLayer = CAShapeLayer()
     
@@ -18,6 +18,8 @@ final class ViewController: UIViewController, UIGestureRecognizerDelegate {
     let faceLandmarks = VNDetectFaceLandmarksRequest()
     let faceLandmarksDetectionRequest = VNSequenceRequestHandler()
     let faceDetectionRequest = VNSequenceRequestHandler()
+    let output = AVCaptureVideoDataOutput()
+    let imageOutput = AVCapturePhotoOutput()
     
     lazy var previewLayer: AVCaptureVideoPreviewLayer? = {
         guard let session = self.session else { return nil }
@@ -27,6 +29,14 @@ final class ViewController: UIViewController, UIGestureRecognizerDelegate {
         
         return previewLayer
     }()
+    
+    func photoOutput(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+        if let photoSampleBuffer = photoSampleBuffer {
+            let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
+            let image = UIImage(data: photoData!)
+            UIImageWriteToSavedPhotosAlbum(image!, nil, nil, nil)
+        }
+    }
     
     var frontCamera: AVCaptureDevice? = {
         return AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: .front)
@@ -44,8 +54,22 @@ final class ViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @objc func handleTap(reactTo tagGesture: UITapGestureRecognizer) {
+        print("fsdfsd")
         
+        let settingsForMonitoring = AVCapturePhotoSettings()
+        settingsForMonitoring.flashMode = .auto
+        settingsForMonitoring.isAutoStillImageStabilizationEnabled = true
+        settingsForMonitoring.isHighResolutionPhotoEnabled = false
+        
+        imageOutput.capturePhoto(with: settingsForMonitoring, delegate: self)
+        
+//        let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
+//        let image = UIImage(data: photoData!)
+        
+//        photoOutput(imageOutput, didFinishProcessingPhoto: <#CMSampleBuffer?#>, previewPhoto: <#CMSampleBuffer?#>)
+//        UIImageWriteToSavedPhotosAlbum(cropedImage!, nil, nil, nil)
     }
+
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -80,7 +104,6 @@ final class ViewController: UIViewController, UIGestureRecognizerDelegate {
                 session.addInput(deviceInput)
             }
             
-            let output = AVCaptureVideoDataOutput()
             output.videoSettings = [
                 String(kCVPixelBufferPixelFormatTypeKey) : Int(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
             ]
@@ -89,6 +112,7 @@ final class ViewController: UIViewController, UIGestureRecognizerDelegate {
             
             if session.canAddOutput(output) {
                 session.addOutput(output)
+                session.addOutput(imageOutput)
             }
             
             session.commitConfiguration()
