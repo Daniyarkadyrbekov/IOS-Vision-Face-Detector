@@ -35,8 +35,16 @@ final class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(reactTo:)))
+        tap.delegate = self
+        self.view.addGestureRecognizer(tap)
+        
         sessionPrepare()
         session?.startRunning()
+    }
+    
+    @objc func handleTap(reactTo tagGesture: UITapGestureRecognizer) {
+        // handling code
     }
     
     override func viewDidLayoutSubviews() {
