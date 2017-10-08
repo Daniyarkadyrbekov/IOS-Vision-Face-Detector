@@ -10,7 +10,7 @@ import UIKit
 import AVFoundation
 import Vision
 
-final class ViewController: UIViewController {
+final class ViewController: UIViewController, UIGestureRecognizerDelegate {
     var session: AVCaptureSession?
     let shapeLayer = CAShapeLayer()
     
@@ -44,7 +44,18 @@ final class ViewController: UIViewController {
     }
     
     @objc func handleTap(reactTo tagGesture: UITapGestureRecognizer) {
-        // handling code
+        print("fsdfsd")
+        screenShotMethod()
+    }
+    
+    func screenShotMethod() {
+        //Create the UIImage
+        UIGraphicsBeginImageContext(view.frame.size)
+        view.layer.render(in: UIGraphicsGetCurrentContext()!)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        //Save it to the camera roll
+        UIImageWriteToSavedPhotosAlbum(image!, nil, nil, nil)
     }
     
     override func viewDidLayoutSubviews() {
