@@ -10,7 +10,7 @@ import UIKit
 import AVFoundation
 import Vision
 
-final class ViewController: UIViewController {
+final class ViewController: UIViewController, UIGestureRecognizerDelegate {
     var session: AVCaptureSession?
     let shapeLayer = CAShapeLayer()
     
@@ -44,7 +44,7 @@ final class ViewController: UIViewController {
     }
     
     @objc func handleTap(reactTo tagGesture: UITapGestureRecognizer) {
-        // handling code
+        
     }
     
     override func viewDidLayoutSubviews() {
