@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 import Vision
-import Alomafire
+import Alamofire
 
 final class ViewController: UIViewController, UIGestureRecognizerDelegate, AVCapturePhotoCaptureDelegate {
     var session: AVCaptureSession?
